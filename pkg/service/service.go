@@ -1,7 +1,8 @@
 package service
 
 import (
-	todo "todo"
+	"go.uber.org/zap"
+	"todo"
 	"todo/pkg/repository"
 )
 
@@ -17,10 +18,12 @@ type Service struct {
 	Authorization
 	TodoList
 	TodoItem
+	log zap.Logger
 }
 
-func NewService(repos *repository.Repository) *Service {
+func NewService(repos *repository.Repository, log zap.Logger) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
+		log:           log,
 	}
 }

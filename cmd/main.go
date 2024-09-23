@@ -22,7 +22,7 @@ func main() {
 		log.Fatalf("Failed to init configs: %v", err)
 	}
 
-	zapLog := logger.Setup(logger.Config{
+	Log := logger.Setup(logger.Config{
 		Evn: viper.GetString("evn"),
 	})
 
@@ -31,10 +31,10 @@ func main() {
 		if err != nil {
 			log.Warn(fmt.Sprintf("Failed to sync zap logger, errror: %s", err))
 		}
-	}(zapLog)
+	}(Log)
 
 	if err := godotenv.Load(); err != nil {
-		zapLog.Fatal(fmt.Sprintf("Failed to load .env, error: %s", err))
+		Log.Fatal(fmt.Sprintf("Failed to load .env, error: %s", err))
 	}
 
 	db, err := repository.NewPostgresBD(repository.Config{
@@ -47,12 +47,12 @@ func main() {
 	})
 
 	if err != nil {
-		zapLog.Fatal(fmt.Sprintf("Failed to init db connection, error: %s", err))
+		Log.Fatal(fmt.Sprintf("Failed to init db connection, error: %s", err))
 	}
 
-	repos := repository.NewRepository(db)
-	services := service.NewService(repos)
-	handlers := handler.NewHandler(services, *zapLog)
+	repos := repository.NewRepository(db, *Log)
+	services := service.NewService(repos, *Log)
+	handlers := handler.NewHandler(services, *Log)
 
 	srv := new(todo.Server)
 	if err := srv.Run(&http.Server{
@@ -62,12 +62,12 @@ func main() {
 		ReadTimeout:    viper.GetDuration("timeout"),
 		WriteTimeout:   viper.GetDuration("timeout"),
 	}); err != nil {
-		zapLog.Fatal(fmt.Sprintf("Failed to start server, error: %s", err))
+		Log.Fatal(fmt.Sprintf("Failed to start server, error: %s", err))
 	}
 
 	defer func(srv *todo.Server, ctx context.Context) {
 		if err := srv.Shutdown(ctx); err != nil {
-			zapLog.Error(fmt.Sprintf("Failed to shutdown server, error: %s", err))
+			Log.Error(fmt.Sprintf("Failed to shutdown server, error: %s", err))
 		}
 	}(srv, context.Background())
 }

@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	_ "os/user"
-	todo "todo"
+	"todo"
 )
 
 func (h *Handler) singUp(c *gin.Context) {
