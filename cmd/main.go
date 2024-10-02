@@ -50,8 +50,8 @@ func main() {
 		Log.Fatal(fmt.Sprintf("Failed to init db connection, error: %s", err))
 	}
 
-	repos := repository.NewRepository(db, *Log)
-	services := service.NewService(repos, *Log)
+	repos := repository.NewRepository(db)
+	services := service.NewService(repos)
 	handlers := handler.NewHandler(services, *Log)
 
 	srv := new(todo.Server)

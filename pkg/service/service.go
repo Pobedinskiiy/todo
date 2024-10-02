@@ -1,13 +1,13 @@
 package service
 
 import (
-	"go.uber.org/zap"
 	"todo"
 	"todo/pkg/repository"
 )
 
 type Authorization interface {
 	CreateUser(user todo.User) (int, error)
+	GenerateToken(username, password string) (string, error)
 }
 
 type TodoList interface{}
@@ -18,12 +18,10 @@ type Service struct {
 	Authorization
 	TodoList
 	TodoItem
-	log zap.Logger
 }
 
-func NewService(repos *repository.Repository, log zap.Logger) *Service {
+func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
-		log:           log,
 	}
 }

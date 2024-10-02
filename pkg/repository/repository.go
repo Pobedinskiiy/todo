@@ -2,12 +2,12 @@ package repository
 
 import (
 	"github.com/jmoiron/sqlx"
-	"go.uber.org/zap"
 	"todo"
 )
 
 type Authorization interface {
 	CreateUser(user todo.User) (int, error)
+	GetUser(username, password string) (todo.User, error)
 }
 
 type TodoList interface{}
@@ -18,12 +18,10 @@ type Repository struct {
 	Authorization
 	TodoList
 	TodoItem
-	log zap.Logger
 }
 
-func NewRepository(db *sqlx.DB, log zap.Logger) *Repository {
+func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
-		log:           log,
 	}
 }
